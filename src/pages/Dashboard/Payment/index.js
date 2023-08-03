@@ -14,7 +14,6 @@ export default function Payment() {
   const [tickets, setTickets] = useState([]);
   const [ticket, setTicket] = useState({});
   const [reserve, setReserve] = useState(false);
-  const [chosenTicket, setChosenTicket]  = useState(true);
 
   console.log(ticket);
 
@@ -79,14 +78,14 @@ export default function Payment() {
         <Instruction>
           Ingresso escolhido    
         </Instruction>
-        <Modality chosenTicket={chosenTicket}>
+        <Modality chosenTicket={true}>
           Presencial + Com Hotel
-          <Price chosenTicket={chosenTicket}>R$ 250</Price>
+          <Price chosenTicket={true}>R$ 250</Price>
         </Modality>
         <Instruction>
           Pagamento    
         </Instruction>
-        <Container chosenTicket={chosenTicket}>
+        <Container chosenTicket={true}>
           Colocar o imagem do Cartão + Inputs
         </Container>
       </>     

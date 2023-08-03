@@ -17,7 +17,6 @@ import Certificate from './pages/Dashboard/Certificate';
 import { EventInfoProvider } from './contexts/EventInfoContext';
 import { UserProvider } from './contexts/UserContext';
 import useToken from './hooks/useToken';
-import CreditCard from './pages/Dashboard/Payment/CreditCard';
 
 export default function App() {
   return (

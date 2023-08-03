@@ -3,7 +3,6 @@ import useEnrollment from '../../../hooks/api/useEnrollment';
 import { useState, useEffect } from 'react';
 import useToken from '../../../hooks/useToken';
 import axios from 'axios';
-import CreditCard from './CreditCard';
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
@@ -12,9 +11,12 @@ export default function Payment() {
   const [withHotel, setWithHotel] = useState(false);
   const [withoutHotel, setWithoutHotel] = useState(false);
   const [tickets, setTickets] = useState([]);
+  const [ticket, setTicket] = useState({});
+  const [reserve, setReserve] = useState(false);
   const token = useToken();
 
   console.log(tickets);
+  console.log(ticket);
 
   function handleModality(modalidade) {
     if (modalidade === 'Presencial') {
@@ -44,53 +46,79 @@ export default function Payment() {
       .catch((err) => console.log(err.responde.data));
   }, [token]);
 
+  function createTicket() {
+    if(presencialSelect && withHotel) {
+      const ticket = tickets.find((type) => type.isRemote === false && type.includesHotel === true);
+      setTicket(ticket.id);
+    } else if (presencialSelect && !withHotel) {
+      const ticket = tickets.find((type) => type.isRemote === false && type.includesHotel === false);
+      setTicket(ticket.id);
+    } else {
+      const ticket = tickets.find((type) => type.isRemote === true);
+      setTicket(ticket.id);
+    }
+    setReserve(true);
+    const config = {
+      headers: { authorization: `Bearer ${token}` }
+    };
+    const ticketTypeId = ticket;
+    console.log(ticket);
+    axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, ticketTypeId, config)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err.responde));
+  };
+
   return (
-    <>
+    reserve? 
       <Header>
-          Ingresso e pagamento
-      </Header>
-      {!enrollment ? (
-        <>
-          <Message>
-            Você precisa completar sua inscrição antes<br/> de prosseguir pra escolha de ingresso
-          </Message>
-        </>
-      ) : 
-        <>
-          <Instruction>Primeiro, escolha sua modalidade de ingresso</Instruction>
-          <Container>
-            <Modality onClick={() => handleModality('Presencial')} color={presencialSelect}>
-              <Mode>Presencial</Mode>
-              <Price>R$ 250</Price>
-            </Modality>
-            <Modality onClick={() => handleModality('Online')} color={onlineSelect}>
-              <Mode>Online</Mode>
-              <Price>R$ 100</Price>
-            </Modality>
-          </Container>
-          { presencialSelect ? 
-            <>
-              <Instruction>Ótimo! Agora escolha sua modalidade de hospedagem</Instruction>
-              <Container>
-                <Hotel onClick={() => handleAccommodation('Sem Hotel')} color={withoutHotel}>
-                  <Mode>Sem Hotel</Mode>
-                  <Price>+ R$ 0</Price>
-                </Hotel>
-                <Hotel onClick={() => handleAccommodation('Com Hotel')} color={withHotel}>
-                  <Mode>Com Hotel</Mode>
-                  <Price>+ R$ 350</Price>
-                </Hotel>
-              </Container>          
-              <Instruction>Fechado! O total ficou em <p> {withHotel? 'R$ 600' : 'R$ 250'}</p>. Agora é só confirmar:</Instruction>
-              <Button onClick={() => CreditCard()}><p>RESERVAR INGRESSO</p></Button>
-            </> : <>
-              <Instruction>Fechado! O total ficou em <p> R$ 100</p>. Agora é só confirmar:</Instruction>
-              <Button><p>RESERVAR INGRESSO</p></Button> 
-            </>
-          }          
-        </>
-      }
-    </>
+        Ingresso e pagamento
+      </Header> :
+      <>
+        <Header>
+            Ingresso e pagamento
+        </Header>
+        {!enrollment ? (
+          <>
+            <Message>
+              Você precisa completar sua inscrição antes<br/> de prosseguir pra escolha de ingresso
+            </Message>
+          </>
+        ) : 
+          <>
+            <Instruction>Primeiro, escolha sua modalidade de ingresso</Instruction>
+            <Container>
+              <Modality onClick={() => handleModality('Presencial')} color={presencialSelect}>
+                <Mode>Presencial</Mode>
+                <Price>R$ 250</Price>
+              </Modality>
+              <Modality onClick={() => handleModality('Online')} color={onlineSelect}>
+                <Mode>Online</Mode>
+                <Price>R$ 100</Price>
+              </Modality>
+            </Container>
+            { presencialSelect ? 
+              <>
+                <Instruction>Ótimo! Agora escolha sua modalidade de hospedagem</Instruction>
+                <Container>
+                  <Hotel onClick={() => handleAccommodation('Sem Hotel')} color={withoutHotel}>
+                    <Mode>Sem Hotel</Mode>
+                    <Price>+ R$ 0</Price>
+                  </Hotel>
+                  <Hotel onClick={() => handleAccommodation('Com Hotel')} color={withHotel}>
+                    <Mode>Com Hotel</Mode>
+                    <Price>+ R$ 350</Price>
+                  </Hotel>
+                </Container>          
+                <Instruction>Fechado! O total ficou em <p> {withHotel? 'R$ 600' : 'R$ 250'}</p>. Agora é só confirmar:</Instruction>
+                <Button onClick={() => createTicket()}><p>RESERVAR INGRESSO</p></Button>
+              </> : <>
+                <Instruction>Fechado! O total ficou em <p> R$ 100</p>. Agora é só confirmar:</Instruction>
+                <Button onClick={() => createTicket()}><p>RESERVAR INGRESSO</p></Button>
+              </>
+            }          
+          </>
+        }
+      </>    
   );
 }
 

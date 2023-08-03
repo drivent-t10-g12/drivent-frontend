@@ -6,6 +6,7 @@ import axios from 'axios';
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
+  const token = useToken();
   const [ presencialSelect, setPresencialSelect] = useState(false);
   const [ onlineSelect, setOnlineSelect] = useState(false);
   const [withHotel, setWithHotel] = useState(false);
@@ -13,9 +14,8 @@ export default function Payment() {
   const [tickets, setTickets] = useState([]);
   const [ticket, setTicket] = useState({});
   const [reserve, setReserve] = useState(false);
-  const token = useToken();
+  const [chosenTicket, setChosenTicket]  = useState(true);
 
-  console.log(tickets);
   console.log(ticket);
 
   function handleModality(modalidade) {
@@ -49,30 +49,48 @@ export default function Payment() {
   function createTicket() {
     if(presencialSelect && withHotel) {
       const ticket = tickets.find((type) => type.isRemote === false && type.includesHotel === true);
-      setTicket(ticket.id);
+      setTicket(ticket);
     } else if (presencialSelect && !withHotel) {
       const ticket = tickets.find((type) => type.isRemote === false && type.includesHotel === false);
-      setTicket(ticket.id);
+      setTicket(ticket);
     } else {
       const ticket = tickets.find((type) => type.isRemote === true);
-      setTicket(ticket.id);
+      setTicket(ticket);
     }
     setReserve(true);
+  };
+
+  if(reserve === true) {
     const config = {
       headers: { authorization: `Bearer ${token}` }
     };
-    const ticketTypeId = ticket;
-    console.log(ticket);
+    const ticketTypeId = ticket.id;
     axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, ticketTypeId, config)
       .then((res) => console.log(res))
-      .catch((err) => console.log(err.responde));
-  };
+      .catch((err) => console.log(err));
+  }
 
   return (
     reserve? 
-      <Header>
-        Ingresso e pagamento
-      </Header> :
+      <>
+        <Header>
+          Ingresso e pagamento
+        </Header> 
+        <Instruction>
+          Ingresso escolhido    
+        </Instruction>
+        <Modality chosenTicket={chosenTicket}>
+          Presencial + Com Hotel
+          <Price chosenTicket={chosenTicket}>R$ 250</Price>
+        </Modality>
+        <Instruction>
+          Pagamento    
+        </Instruction>
+        <Container chosenTicket={chosenTicket}>
+          Colocar o imagem do Cartão + Inputs
+        </Container>
+      </>     
+      :
       <>
         <Header>
             Ingresso e pagamento
@@ -162,9 +180,10 @@ const Header = styled.div`
 `;
 const Container = styled.div`
   display: flex;
-  width: 320px;
+  width: ${(props) => props.chosenTicket? '706px' : '320px'};
   gap: 25px;
-  margin-top: 20px;
+  padding: ${(props) => props.chosenTicket? '12px' : ''};
+  border: ${(props) => props.chosenTicket? '1px solid black' : ''};
 `;
 const Price = styled.p`
   color: #898989;
@@ -174,6 +193,7 @@ const Price = styled.p`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  margin-top: ${(props) => props.chosenTicket? '8px' : '3px'};
 `;
 const Mode = styled.p`
   color: #454545;
@@ -189,11 +209,13 @@ const Modality = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 145px;
-  height: 145px;
+  width: ${(props) => props.chosenTicket? '300px' : '145px' };
+  height: ${(props) => props.chosenTicket? '108px' : '145px' };
+  margin-top: 20px;
   border-radius: 20px;
   border: 1px solid #CECECE;
   background-color: ${(props) => props.color === true? ' #FFEED2' : 'white'};
+  background: ${(props) => props.chosenTicket? '#FFEED2' : ''};
 `;
 const Hotel = styled.div`
   display: flex;

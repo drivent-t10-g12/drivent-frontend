@@ -223,6 +223,7 @@ const Hotel = styled.div`
   justify-content: center;
   width: 145px;
   height: 145px;
+  margin-top: 20px;
   border-radius: 20px;
   border: 1px solid #CECECE;
   background-color: ${(props) => props.color === true? ' #FFEED2' : 'white'};

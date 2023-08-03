@@ -63,8 +63,8 @@ export default function Payment() {
     const config = {
       headers: { authorization: `Bearer ${token}` }
     };
-    const ticketTypeId = ticket.id;
-    axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, ticketTypeId, config)
+    const body = { ticketTypeId: ticket.id };
+    axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, body, config)
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   }

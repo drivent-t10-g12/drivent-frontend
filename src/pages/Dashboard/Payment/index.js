@@ -3,6 +3,8 @@ import useEnrollment from '../../../hooks/api/useEnrollment';
 import { useState, useEffect } from 'react';
 import useToken from '../../../hooks/useToken';
 import axios from 'axios';
+import card from '../../../assets/images/card.png';
+import { Button, Container, Header, Hotel, Instruction, Message, Modality, Mode, Price } from './styled.js';
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
@@ -14,6 +16,9 @@ export default function Payment() {
   const [tickets, setTickets] = useState([]);
   const [ticket, setTicket] = useState({});
   const [reserve, setReserve] = useState(false);
+  const [price, setPrice] = useState('R$ 100');
+  const [onOff, setOnOff] = useState(false);
+  const [cardData, setCardData] = useState({ number: '', name: '', valid: '', cvc: '' });
 
   console.log(ticket);
 
@@ -21,9 +26,11 @@ export default function Payment() {
     if (modalidade === 'Presencial') {
       setPresencialSelect(true);
       setOnlineSelect(false);
+      setOnOff(true);
     } else if (modalidade === 'Online') {
       setPresencialSelect(false);
       setOnlineSelect(true);
+      setOnOff(true);
     };
   };
   function handleAccommodation(hospedagem) {
@@ -34,6 +41,16 @@ export default function Payment() {
       setWithoutHotel(false);
       setWithHotel(true);
     };
+  };
+
+  function handlePrice() {
+    withHotel ?
+      setPrice('R$ 600') :
+      setPrice('R$ 250');
+  };
+
+  function inputChange(e) {
+    setCardData({ ...cardData, [e.target.name]: e.target.value });
   };
 
   useEffect(() => {
@@ -80,13 +97,24 @@ export default function Payment() {
         </Instruction>
         <Modality chosenTicket={true}>
           Presencial + Com Hotel
-          <Price chosenTicket={true}>R$ 250</Price>
+          <Price chosenTicket={true}>{price}</Price>
         </Modality>
         <Instruction>
           Pagamento    
         </Instruction>
         <Container chosenTicket={true}>
-          Colocar o imagem do Cartão + Inputs
+          <CardArea>
+            <img src={card}></img>
+            <CardForm>
+              <CardInput id='number' placeholder='Card Number'></CardInput>
+              <label for='number'>E.g: 49..., 51..., 36..., 37...</label>
+              <CardInput placeholder='Name'></CardInput>
+              <Container2>
+                <Valid placeholder='Valid Thru'></Valid>
+                <Cvc placeholder='CVC'></Cvc>
+              </Container2>
+            </CardForm>
+          </CardArea>
         </Container>
       </>     
       :
@@ -127,11 +155,12 @@ export default function Payment() {
                   </Hotel>
                 </Container>          
                 <Instruction>Fechado! O total ficou em <p> {withHotel? 'R$ 600' : 'R$ 250'}</p>. Agora é só confirmar:</Instruction>
-                <Button onClick={() => createTicket()}><p>RESERVAR INGRESSO</p></Button>
-              </> : <>
-                <Instruction>Fechado! O total ficou em <p> R$ 100</p>. Agora é só confirmar:</Instruction>
-                <Button onClick={() => createTicket()}><p>RESERVAR INGRESSO</p></Button>
-              </>
+                <Button onClick={() => {createTicket(); handlePrice();}}><p>RESERVAR INGRESSO</p></Button>
+              </> : onOff ? 
+                <>
+                  <Instruction>Fechado! O total ficou em <p> R$ 100</p>. Agora é só confirmar:</Instruction>
+                  <Button onClick={() => createTicket()}><p>RESERVAR INGRESSO</p></Button>
+                </> : <></>
             }          
           </>
         }
@@ -139,114 +168,76 @@ export default function Payment() {
   );
 }
 
-const Message = styled.div`
+const CardArea = styled.div`
+
+  width: 706px;
+  height: 225px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 93%;
-  color: #8E8E8E;
-  text-align: center;
-  font-family: 'Roboto';
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;
-const Instruction = styled.div`
-  display: flex;
-  width: 100%;
-  color: #8E8E8E;
-  text-align: center;
-  margin-top: 25px;
-  font-family: 'Roboto';
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  p {
-    font-weight: bold;
-    margin-left: 6px;
-  }
-`;
-const Header = styled.div`
-  color: #000;
-  font-family: 'Roboto';
-  font-size: 34px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;
-const Container = styled.div`
-  display: flex;
-  width: ${(props) => props.chosenTicket? '706px' : '320px'};
-  gap: 25px;
-  padding: ${(props) => props.chosenTicket? '12px' : ''};
-  border: ${(props) => props.chosenTicket? '1px solid black' : ''};
-`;
-const Price = styled.p`
-  color: #898989;
-  text-align: center;
-  font-family: 'Roboto';
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  margin-top: ${(props) => props.chosenTicket? '8px' : '3px'};
-`;
-const Mode = styled.p`
-  color: #454545;
-  text-align: center;
-  font-family: 'Roboto';
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;
-const Modality = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: ${(props) => props.chosenTicket? '300px' : '145px' };
-  height: ${(props) => props.chosenTicket? '108px' : '145px' };
-  margin-top: 20px;
-  border-radius: 20px;
-  border: 1px solid #CECECE;
-  background-color: ${(props) => props.color === true? ' #FFEED2' : 'white'};
-  background: ${(props) => props.chosenTicket? '#FFEED2' : ''};
-`;
-const Hotel = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 145px;
-  height: 145px;
-  margin-top: 20px;
-  border-radius: 20px;
-  border: 1px solid #CECECE;
-  background-color: ${(props) => props.color === true? ' #FFEED2' : 'white'};
+  box-sizing: border-box;
+  
+
 `;
 
-const Button = styled.button`
-  width: 162px;
-  height: 37px;
-  padding: 10px;
-  margin-top: 20px;
-  border-radius: 4px;
-  background: #E0E0E0;
-  border: none;
-  :hover {
-    cursor: pointer;
-  }
-  p {
-    color: #000;
-    text-align: center;
-    font-family: Roboto;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-  }  
+const CardForm = styled.form`
+  height: 72%;
+  margin-left: 25px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  label {
+    color: #cecece
+  };
+
+  && ::placeholder{
+    color: #9d9d9d;
+    font-family: 'Roboto';
+    font-size: 19px;
+  };
+`;
+
+const CardInput = styled.input`
+  width: 100%;
+  height: 40px;
+  border: 1px solid #cecece;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0px 14px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: 'Roboto';
+`;
+
+const Container2 = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+`;
+
+const Valid = styled.input`
+  width: 61%;
+  height: 40px;
+  border: 1px solid #cecece;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0px 14px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: 'Roboto';
+`;
+const Cvc = styled.input`
+  width: 38%;
+  height: 40px;
+  border: 1px solid #cecece;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0px 14px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: 'Roboto';
 `;

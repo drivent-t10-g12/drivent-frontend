@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import useToken from '../../../hooks/useToken';
 import axios from 'axios';
 import card from '../../../assets/images/card.png';
+import check from '../../../assets/images/akar-icons_circle-check-fill.png';
 import { Button, Container, Header, Hotel, Instruction, Message, Modality, Mode, Price } from './styled.js';
 
 export default function Payment() {
@@ -14,13 +15,15 @@ export default function Payment() {
   const [withHotel, setWithHotel] = useState(false);
   const [withoutHotel, setWithoutHotel] = useState(false);
   const [tickets, setTickets] = useState([]);
-  const [ticket, setTicket] = useState({});
+  const [ticketType, setTicketType] = useState({});
   const [reserve, setReserve] = useState(false);
   const [price, setPrice] = useState('R$ 100');
   const [onOff, setOnOff] = useState(false);
   const [cardData, setCardData] = useState({ number: '', name: '', valid: '', cvc: '' });
+  const [ticketId, setTicketId] = useState();
+  const [paid, setPaid] = useState(false);
 
-  console.log(ticket);
+  console.log(ticketId);
 
   function handleModality(modalidade) {
     if (modalidade === 'Presencial') {
@@ -53,6 +56,23 @@ export default function Payment() {
     setCardData({ ...cardData, [e.target.name]: e.target.value });
   };
 
+  function handleSubmit(event) {
+    event.preventDefault();
+    const config = {
+      headers: { authorization: `Bearer ${token}` }
+    };
+    const formData = {
+      issuer: cardData.name,
+      number: cardData.number,
+      name: cardData.name,
+      expirationDate: cardData.valid,
+      cvc: cardData.cvc,
+    };
+    axios.post(`${process.env.REACT_APP_API_BASE_URL}/payments/process`, { cardData: formData, ticketId: ticketId }, config)
+      .then((res) => setPaid(true))
+      .catch((err) => console.log(err));
+  };
+
   useEffect(() => {
     const config = {
       headers: { authorization: `Bearer ${token}` }
@@ -65,13 +85,13 @@ export default function Payment() {
   function createTicket() {
     if(presencialSelect && withHotel) {
       const ticket = tickets.find((type) => type.isRemote === false && type.includesHotel === true);
-      setTicket(ticket);
+      setTicketType(ticket);
     } else if (presencialSelect && !withHotel) {
       const ticket = tickets.find((type) => type.isRemote === false && type.includesHotel === false);
-      setTicket(ticket);
+      setTicketType(ticket);
     } else {
       const ticket = tickets.find((type) => type.isRemote === true);
-      setTicket(ticket);
+      setTicketType(ticket);
     }
     setReserve(true);
   };
@@ -80,9 +100,9 @@ export default function Payment() {
     const config = {
       headers: { authorization: `Bearer ${token}` }
     };
-    const body = { ticketTypeId: ticket.id };
+    const body = { ticketTypeId: ticketType.id };
     axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, body, config)
-      .then((res) => console.log(res))
+      .then((res) => setTicketId(res.data.id))
       .catch((err) => console.log(err));
   }
 
@@ -96,26 +116,61 @@ export default function Payment() {
           Ingresso escolhido    
         </Instruction>
         <Modality chosenTicket={true}>
-          Presencial + Com Hotel
+          {presencialSelect?  (withHotel? 'Presencial + Hotel': 'Presencial'): 'Online'}
           <Price chosenTicket={true}>{price}</Price>
         </Modality>
         <Instruction>
           Pagamento    
         </Instruction>
-        <Container chosenTicket={true}>
-          <CardArea>
-            <img src={card}></img>
-            <CardForm>
-              <CardInput id='number' placeholder='Card Number'></CardInput>
-              <label for='number'>E.g: 49..., 51..., 36..., 37...</label>
-              <CardInput placeholder='Name'></CardInput>
-              <Container2>
-                <Valid placeholder='Valid Thru'></Valid>
-                <Cvc placeholder='CVC'></Cvc>
-              </Container2>
-            </CardForm>
-          </CardArea>
-        </Container>
+        {!paid? 
+          <NaoPago>
+            <CardArea>
+              <img src={card}></img>
+              <CardForm onSubmit={handleSubmit} id='form'>
+                <CardInput
+                  id="number"
+                  placeholder="Card Number"
+                  name="number"
+                  onChange={inputChange}
+                  value={cardData.number}
+                ></CardInput>
+                <label htmlFor="number">E.g: 49..., 51..., 36..., 37...</label>
+                <CardInput
+                  placeholder="Name"
+                  name="name"
+                  onChange={inputChange}
+                  value={cardData.name}
+                ></CardInput>
+                <Container2>
+                  <Valid
+                    placeholder="Valid Thru"
+                    name="valid"
+                    onChange={inputChange}
+                    value={cardData.valid}
+                  ></Valid>
+                  <Cvc
+                    placeholder="CVC"
+                    name="cvc"
+                    onChange={inputChange}
+                    value={cardData.cvc}
+                  ></Cvc>
+                </Container2>
+              </CardForm>
+            </CardArea>
+            <Button form='form' type='submit' finished={true}>FINALIZAR PAGAMENTO</Button>
+          </NaoPago>
+          : <Pago>
+            <img src={check}/>
+            <div>
+              <Confirmado>
+                Pagamento confirmado!             
+              </Confirmado>
+              <p>
+                Prossiga para escolha de hospedagem e atividades
+              </p>
+            </div>
+          </Pago>
+        }
       </>     
       :
       <>
@@ -169,24 +224,24 @@ export default function Payment() {
 }
 
 const CardArea = styled.div`
-
   width: 706px;
-  height: 225px;
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  
-
+  gap: 30px;
+  @media (max-width: 850px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 `;
 
 const CardForm = styled.form`
   height: 72%;
-  margin-left: 25px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
   label {
     color: #cecece
   };
@@ -206,6 +261,7 @@ const CardInput = styled.input`
   display: flex;
   align-items: center;
   padding: 0px 14px;
+  margin: 10px 0;
   box-sizing: border-box;
   font-size: 14px;
   font-family: 'Roboto';
@@ -241,3 +297,26 @@ const Cvc = styled.input`
   font-size: 14px;
   font-family: 'Roboto';
 `;
+
+const NaoPago = styled.div`
+  @media (max-width: 850px) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 15px;
+  }
+`;
+const Pago = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+  gap: 15px;
+  P {
+    line-height: 20px;
+  }
+`;
+
+const Confirmado = styled.p`
+  font-weight: bold;
+`;
+

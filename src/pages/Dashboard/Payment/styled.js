@@ -42,7 +42,6 @@ export const Container = styled.div`
   display: flex;
   width: ${(props) => props.chosenTicket? '706px' : '320px'};
   gap: 25px;
-  padding: ${(props) => props.chosenTicket? '12px' : ''};
 `;
 export const Price = styled.p`
   color: #898989;
@@ -90,7 +89,7 @@ export const Hotel = styled.div`
 `;
 
 export const Button = styled.button`
-  width: 162px;
+  width: ${props => props.finished? '182px' : '162px'};
   height: 37px;
   padding: 10px;
   margin-top: 20px;

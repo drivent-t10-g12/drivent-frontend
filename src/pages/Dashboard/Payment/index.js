@@ -96,15 +96,17 @@ export default function Payment() {
     setReserve(true);
   };
 
-  if(reserve === true) {
-    const config = {
-      headers: { authorization: `Bearer ${token}` }
+  useEffect(() => {
+    if(reserve === true) {
+      const config = {
+        headers: { authorization: `Bearer ${token}` }
+      };
+      const body = { ticketTypeId: ticketType.id };
+      axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, body, config)
+        .then((res) => setTicketId(res.data.id))
+        .catch((err) => console.log(err));
     };
-    const body = { ticketTypeId: ticketType.id };
-    axios.post(`${process.env.REACT_APP_API_BASE_URL}/tickets`, body, config)
-      .then((res) => setTicketId(res.data.id))
-      .catch((err) => console.log(err));
-  }
+  }, [reserve]);
 
   return (
     reserve? 

@@ -119,6 +119,7 @@ export default function Payment() {
         </Instruction>
         <Modality chosenTicket={true}>
           {presencialSelect?  (withHotel? 'Presencial + Hotel': 'Presencial'): 'Online'}
+          Presencial + Com Hotel
           <Price chosenTicket={true}>{price}</Price>
         </Modality>
         <Instruction>
@@ -173,6 +174,20 @@ export default function Payment() {
             </div>
           </Pago>
         }
+        <Container chosenTicket={true}>
+          <CardArea>
+            <img src={card}></img>
+            <CardForm>
+              <CardInput id='number' placeholder='Card Number'></CardInput>
+              <label for='number'>E.g: 49..., 51..., 36..., 37...</label>
+              <CardInput placeholder='Name'></CardInput>
+              <Container2>
+                <Valid placeholder='Valid Thru'></Valid>
+                <Cvc placeholder='CVC'></Cvc>
+              </Container2>
+            </CardForm>
+          </CardArea>
+        </Container>
       </>     
       :
       <>
@@ -236,14 +251,22 @@ const CardArea = styled.div`
     align-items: flex-start;
     gap: 10px;
   }
+
+  width: 706px;
+  height: 225px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  
 `;
 
 const CardForm = styled.form`
   height: 72%;
+  margin-left: 25px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-between
   label {
     color: #cecece
   };
@@ -277,6 +300,14 @@ const Container2 = styled.div`
 
 const Valid = styled.input`
   width: 61%;
+  height: 40px;
+  border: 1px solid #cecece;
+  border-radius: 6px;
+  display: flex;
+`;
+
+const CardInput = styled.input`
+  width: 100%;
   height: 40px;
   border: 1px solid #cecece;
   border-radius: 6px;
@@ -320,5 +351,34 @@ const Pago = styled.div`
 
 const Confirmado = styled.p`
   font-weight: bold;
+
+const Container2 = styled.div`
+  display: flex;
+  justify-content: space-between;
+
 `;
 
+const Valid = styled.input`
+  width: 61%;
+  height: 40px;
+  border: 1px solid #cecece;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0px 14px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: 'Roboto';
+`;
+const Cvc = styled.input`
+  width: 38%;
+  height: 40px;
+  border: 1px solid #cecece;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0px 14px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family: 'Roboto';
+`;

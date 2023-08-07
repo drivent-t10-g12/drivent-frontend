@@ -42,6 +42,7 @@ export const Container = styled.div`
   display: flex;
   width: ${(props) => props.chosenTicket? '706px' : '320px'};
   gap: 25px;
+  padding: ${(props) => props.chosenTicket? '12px' : ''};
 `;
 export const Price = styled.p`
   color: #898989;

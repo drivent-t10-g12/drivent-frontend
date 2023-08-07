@@ -174,20 +174,7 @@ export default function Payment() {
             </div>
           </Pago>
         }
-        <Container chosenTicket={true}>
-          <CardArea>
-            <img src={card}></img>
-            <CardForm>
-              <CardInput id='number' placeholder='Card Number'></CardInput>
-              <label for='number'>E.g: 49..., 51..., 36..., 37...</label>
-              <CardInput placeholder='Name'></CardInput>
-              <Container2>
-                <Valid placeholder='Valid Thru'></Valid>
-                <Cvc placeholder='CVC'></Cvc>
-              </Container2>
-            </CardForm>
-          </CardArea>
-        </Container>
+        
       </>     
       :
       <>
@@ -297,7 +284,7 @@ const Container2 = styled.div`
   justify-content: space-between;
 
 `;
-
+/*
 const Valid = styled.input`
   width: 61%;
   height: 40px;
@@ -318,6 +305,7 @@ const CardInput = styled.input`
   font-size: 14px;
   font-family: 'Roboto';
 `;
+
 const Cvc = styled.input`
   width: 38%;
   height: 40px;
@@ -330,6 +318,7 @@ const Cvc = styled.input`
   font-size: 14px;
   font-family: 'Roboto';
 `;
+*/
 
 const NaoPago = styled.div`
   @media (max-width: 850px) {
@@ -351,12 +340,7 @@ const Pago = styled.div`
 
 const Confirmado = styled.p`
   font-weight: bold;
-
-const Container2 = styled.div`
-  display: flex;
-  justify-content: space-between;
-
-`;
+  `;
 
 const Valid = styled.input`
   width: 61%;

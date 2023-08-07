@@ -119,7 +119,6 @@ export default function Payment() {
         </Instruction>
         <Modality chosenTicket={true}>
           {presencialSelect?  (withHotel? 'Presencial + Hotel': 'Presencial'): 'Online'}
-          Presencial + Com Hotel
           <Price chosenTicket={true}>{price}</Price>
         </Modality>
         <Instruction>

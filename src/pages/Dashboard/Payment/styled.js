@@ -103,7 +103,7 @@ export const Button = styled.button`
   p {
     color: #000;
     text-align: center;
-    font-family: Roboto;
+    font-family: 'Roboto';
     font-size: 14px;
     font-style: normal;
     font-weight: 400;

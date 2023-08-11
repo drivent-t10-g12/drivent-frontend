@@ -283,41 +283,6 @@ const Container2 = styled.div`
   justify-content: space-between;
 
 `;
-/*
-const Valid = styled.input`
-  width: 61%;
-  height: 40px;
-  border: 1px solid #cecece;
-  border-radius: 6px;
-  display: flex;
-`;
-
-const CardInput = styled.input`
-  width: 100%;
-  height: 40px;
-  border: 1px solid #cecece;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  padding: 0px 14px;
-  box-sizing: border-box;
-  font-size: 14px;
-  font-family: 'Roboto';
-`;
-
-const Cvc = styled.input`
-  width: 38%;
-  height: 40px;
-  border: 1px solid #cecece;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  padding: 0px 14px;
-  box-sizing: border-box;
-  font-size: 14px;
-  font-family: 'Roboto';
-`;
-*/
 
 const NaoPago = styled.div`
   @media (max-width: 850px) {

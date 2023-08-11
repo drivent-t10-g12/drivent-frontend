@@ -1,15 +1,15 @@
-import { useState } from 'react';
 import { Header } from '../Payment/styled';
 import NoPayment from './NoPayment';
 import ActivityDay from './ActivityDay';
+import Online from './Online';
 
 export default function Activities() {
-  const [payment, setPayment] = useState(false);
-
+  const payment = true;
+  const online = false;
   return (
     <>
       <Header>Escolha de atividades</Header>
-      { payment? <NoPayment/>: <ActivityDay/> }
+      { payment?  online ? <Online/> : <ActivityDay/> : <NoPayment/> }
     </>
   );
-}
+};
